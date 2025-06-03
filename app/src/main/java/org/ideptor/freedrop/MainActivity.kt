@@ -6,14 +6,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.app.Activity
 import android.hardware.*
 import android.util.Log
 //import android.os.Bundle
-import android.widget.TextView
 import org.ideptor.freedrop.databinding.ActivityMainBinding
 import kotlin.math.abs
-import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() , SensorEventListener {
@@ -25,9 +22,13 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
     private var isFreeFalling = false
     private val FREE_FALL_THRESHOLD = 2.0f  // m/s^2 이하로 판단
 
-    private var altitude = 0.0f
+    private var latitude = 0.0f
 
     private lateinit var binding: ActivityMainBinding
+
+    private var latitudeMax = 0.0f
+    private var latitudeMin = 0.0f
+    private var velocityMax = 0.0f
 
     companion object {
         const val TAG = "MainAcitvity"
@@ -56,15 +57,32 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnClear.setOnClickListener {
+            "CLEAR".also{
+                Log.i(TAG, it)
+                clear(it)
+            }
+        }
+        binding.btnStartLine1.setOnClickListener {
+            "START LINE 1".also{
+                Log.i(TAG, it)
+                clear(it)
+            }
+        }
+        binding.btnStartLine6.setOnClickListener {
+            "START LINE 6".also {
+                Log.i(TAG, it)
+                clear(it)
+            }
+        }
+    }
 
-        binding.btnStartLine1.setOnClickListener {
-            Log.i(TAG, "START LINE 1")
-            binding.tvLog.text = ""
-        }
-        binding.btnStartLine1.setOnClickListener {
-            Log.i(TAG, "START LINE 8")
-            binding.tvLog.text = ""
-        }
+    private fun clear(name: String) {
+        binding.tvLog.text = name
+        binding.tvSummary.text = ""
+        velocityMax = 0.0f
+        latitudeMax = 0.0f
+        latitudeMin = 0.0f
     }
 
     override fun onSensorChanged(event: SensorEvent) {
@@ -92,6 +110,10 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
             velocity += accelZ * dt
         }
 
+        if(velocity < velocityMax) {
+            velocityMax = velocity
+        }
+
         lastTime = currentTime
 
         updateUI()
@@ -99,18 +121,28 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
 
     private fun handlePressure(event: SensorEvent) {
         val pressure = event.values[0] // hPa
-        altitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressure)
+        latitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressure)
+        if (latitudeMin == 0.0f) {
+            latitudeMin = latitude
+        }
+        if (latitude>latitudeMax) {
+            latitudeMax = latitude
+        }
+        if (latitude<latitudeMin) {
+            latitudeMin = latitude
+        }
     }
 
     private fun updateUI() {
         val status = if (isFreeFalling) "Falling" else "normal"
         val text = """
-            status:$status, Speed(m/s):${"%.3f".format(velocity)}, Height(m):${"%.3f".format(altitude)}
+            s:$status,V(m/s):${"%.2f".format(velocity)}, L(m):${"%.2f".format(latitude)}
         """.trimIndent()
 //        textView.text = text
         if(isFreeFalling) {
             Log.i(TAG, text)
             binding.tvLog.append("$text\n")
+            binding.tvSummary.text = "V:${"%.2f".format(velocityMax)}, H:${"%.2f".format(latitudeMax-latitudeMin)} (${"%.2f".format(latitudeMin)}~${"%.2f".format(latitudeMax)})"
         }
     }
 
