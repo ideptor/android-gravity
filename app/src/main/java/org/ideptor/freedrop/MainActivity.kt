@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
 
     private var altitude = 0.0f
 
-    private lateinit var textView: TextView
+    private lateinit var binding: ActivityMainBinding
 
     companion object {
         const val TAG = "MainAcitvity"
@@ -54,11 +54,16 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
         }
 
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnStart.setOnClickListener {
-            Log.i(TAG, "START")
+        binding.btnStartLine1.setOnClickListener {
+            Log.i(TAG, "START LINE 1")
+            binding.tvLog.text = ""
+        }
+        binding.btnStartLine1.setOnClickListener {
+            Log.i(TAG, "START LINE 8")
+            binding.tvLog.text = ""
         }
     }
 
@@ -103,8 +108,10 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
             status:$status, Speed(m/s):${"%.3f".format(velocity)}, Height(m):${"%.3f".format(altitude)}
         """.trimIndent()
 //        textView.text = text
-        if(isFreeFalling)
+        if(isFreeFalling) {
             Log.i(TAG, text)
+            binding.tvLog.append("$text\n")
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}

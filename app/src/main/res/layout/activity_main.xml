@@ -19,13 +19,19 @@
             android:text="Hello World!" />
 
         <Button
-            android:id="@+id/btnStart"
+            android:id="@+id/btnStartLine1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button" />
+            android:text="1 Line Start" />
+
+        <Button
+            android:id="@+id/btnStartLine6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6 Line Start" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tvLog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView" />
