@@ -64,13 +64,13 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
             }
         }
         binding.btnStartLine1.setOnClickListener {
-            "START LINE 1".also{
+            "START_LINE 1".also{
                 Log.i(TAG, it)
                 clear(it)
             }
         }
         binding.btnStartLine6.setOnClickListener {
-            "START LINE 6".also {
+            "START_LINE 6".also {
                 Log.i(TAG, it)
                 clear(it)
             }
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() , SensorEventListener {
     private fun updateUI() {
         val status = if (isFreeFalling) "Falling" else "normal"
         val text = """
-            s:$status,V(m/s):${"%.2f".format(velocity)}, L(m):${"%.2f".format(latitude)}
+            s:$status, V(m/s):${"%.2f".format(velocity)}, L(m):${"%.2f".format(latitude)}
         """.trimIndent()
 //        textView.text = text
         if(isFreeFalling) {
